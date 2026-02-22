@@ -1,25 +1,14 @@
-# Use OpenJDK 17 as base image
-FROM openjdk:17-jdk-slim
+# Use Java 17 as base image
+FROM amazoncorretto:17-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Download dependencies
-RUN ./mvnw dependency:go-offline
-
-# Copy source code
-COPY src ./src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
+# Copy the built JAR file
+COPY target/discovery-server-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose port 8761 (Eureka default port)
 EXPOSE 8761
 
 # Run the application
-CMD ["java", "-jar", "target/discovery-server-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "app.jar"]
